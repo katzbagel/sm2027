@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Stresstest – tältplatsbokning</title>
+<style>
+  * { box-sizing: border-box; }
+  body { background: #0f1520; color: #e8e4f0; font-family: 'Trebuchet MS', sans-serif; margin: 0; padding: 20px 14px; }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p.sub { color: rgba(232,228,240,.6); font-size: 13px; margin: 0 0 18px; line-height: 1.5; }
+  label { display: block; font-size: 11px; letter-spacing: .1em; color: #c9a84c; margin: 12px 0 4px; }
+  input, select { width: 100%; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.18); color: #e8e4f0; padding: 9px 11px; border-radius: 7px; font-size: 15px; font-family: inherit; }
+  .row { display: flex; gap: 10px; } .row > div { flex: 1; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+  button { padding: 10px 14px; border-radius: 8px; border: none; font-family: inherit; font-size: 14px; cursor: pointer; background: linear-gradient(135deg,#c9a84c,#a8873a); color: #fff; font-weight: 600; }
+  button.ghost { background: transparent; border: 1px solid rgba(255,255,255,.2); color: #e8e4f0; font-weight: 400; }
+  button.red { background: #7a1a2a; }
+  button:disabled { opacity: .5; cursor: wait; }
+  #log { background: #0a0f18; border: 1px solid rgba(255,255,255,.08); border-radius: 9px; padding: 12px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; min-height: 120px; }
+  .ok { color: #7fd39a; } .bad { color: #ff8095; } .warn { color: #e6c46a; } .dim { color: rgba(232,228,240,.5); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Stresstest</h1>
+  <p class="sub">Körs bara mot en backend där <code>TEST_MODE = true</code>. Kör gärna samtidigt från flera datorer eller telefoner för att efterlikna en riktig rusning.</p>
+
+  <label>TESTMILJÖNS URL (slutar på /exec)</label>
+  <input id="url" placeholder="https://script.google.com/macros/s/…/exec" />
+  <label>ADMINLÖSENORD (testmiljön)</label>
+  <input id="pw" type="password" />
+  <div class="row">
+    <div><label>ANTAL SAMTIDIGA ANROP</label><input id="n" type="number" value="50" min="1" max="300" /></div>
+    <div><label>KOLLISIONSPLATS</label><input id="spot" type="number" value="1" min="1" max="320" /></div>
+  </div>
+
+  <div class="btns">
+    <button id="bRead">1. Läsning</button>
+    <button id="bClash">2. Krock på samma plats</button>
+    <button id="bRush">3. Rusning, olika platser</button>
+    <button id="bCheck" class="ghost">Kontrollera dubbelbokningar</button>
+    <button id="bReset" class="red">Nollställ testdata</button>
+  </div>
+  <div id="log"><span class="dim">Resultat visas här.</span></div>
+</main>
+<script type="module" src="/src/stresstest.js"></script>
+</body>
+</html>
