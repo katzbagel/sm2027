@@ -1,6 +1,6 @@
-# Tältplatsbokning – Agility SM 2027
+# Agility SM 2027
 
-Bokningssida för tävlingstält. Frontend byggs automatiskt till GitHub Pages vid varje push till `main`. Bokningarna lagras i Google Sheets via Apps Script (`backend/Kod.gs`).
+Två verktyg i samma repo: bokningssida för tävlingstält och besiktningskontroll. Frontend byggs automatiskt till GitHub Pages vid varje push till `main`. Bokningarna lagras i Google Sheets via Apps Script (`backend/Kod.gs`).
 
 ## Delar
 
@@ -32,3 +32,20 @@ Vid ändring av backend: Driftsätt → Hantera driftsättningar → penna → N
 ## Säkerhet
 
 Adminlösenordet kontrolleras i backend och finns inte i det här repot. Telefonnummer skickas bara till inloggad admin.
+
+## Besiktningskontroll
+
+Funktionärer registrerar veterinärbesiktning, och ingångarna ser om ett ekipage får starta.
+
+| Fil | Vad |
+|---|---|
+| `besiktning/index.html` | Hela sidan. `API_URL` överst i skriptet pekar på Apps Script |
+| `backend/Besiktning.gs` | Apps Script-backend. Klistras in manuellt i kalkylbladets Apps Script |
+
+Kalkylbladet har flikarna `Ekipage`, `Besiktning` (logg som bara fylls på) och `Speakerinfo`. Är `Ekipage` tom fylls den med påhittade testdata vid första anropet.
+
+Uppsättning: klistra in `backend/Besiktning.gs`, driftsätt som webbapp (Kör som: jag, Åtkomst: alla) och lägg `/exec`-URL:en i `API_URL`.
+
+Adress: `https://katzbagel.github.io/sm2027/besiktning/`
+
+Säkerhet: alla anrop kräver koden i `KOD` i backend. Koden finns inte i det här repot.

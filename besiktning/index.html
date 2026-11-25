@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Besiktningskontroll SM 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: lugnt, kliniskt arbetsverktyg för en kö vid besiktningen och vid banans ingång.
+IDEA: nummerlappen – startnumret är nyckeln till allt.
+PICTURE: verktyget självt; vid ingången fyller statusen hela skärmen.
+COLOUR and TYPE: midnattsblått och guld från SM-loggan, grönt/rött/grått endast för status. Barlow Condensed för nummer, Inter för text.
+LAYOUT: en kolumn, flikar överst, stora tryckytor för surfplatta och mobil.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f5fb,#0e1226);--card:light-dark(#fff,#171c36);--ink:light-dark(#11152b,#eceaf6);--mute:light-dark(#5d6080,#a7a9c6);
+--line:light-dark(#dcdbe8,#2a3053);--navy:#141a3a;--gold:#d4a72c;--lav:light-dark(#b9b2e6,#8f86cf);
+--ok:#1f8a4c;--okbg:light-dark(#e3f4ea,#12331f);--no:#c43030;--nobg:light-dark(#fbe6e6,#3a1515);--na:light-dark(#6b6e85,#8a8da6);--nabg:light-dark(#ececf2,#232845)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
+header{background:var(--navy);color:#fff;padding:14px max(4vw,16px) 0}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{margin:0;font:700 26px/1.1 "Barlow Condensed",sans-serif;letter-spacing:.01em}
+h1 span{color:var(--gold)}
+.who{display:flex;gap:8px;align-items:center;font-size:14px;color:#cfd0e6}
+.who input{width:150px;padding:8px 10px;border-radius:8px;border:1px solid #3a4170;background:#1d2450;color:#fff;font-size:16px}
+nav{display:flex;gap:4px;margin-top:12px}
+nav button{flex:1;border:0;background:transparent;color:#cfd0e6;font:600 16px Inter,sans-serif;padding:12px 8px;border-bottom:3px solid transparent;cursor:pointer;min-height:44px}
+nav button[aria-selected=true]{color:#fff;border-color:var(--gold)}
+main{max-width:860px;margin:0 auto;padding:20px max(4vw,16px) 48px}
+.note{font-size:13px;color:var(--mute);margin:0 0 14px}
+.search{width:100%;font-size:20px;padding:14px 16px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.search:focus,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;min-height:64px;text-align:left;width:100%;color:inherit;font:inherit}
+.num{font:700 30px/1 "Barlow Condensed",sans-serif;text-align:right;font-variant-numeric:tabular-nums}
+.nm b{display:block;font-weight:600}.nm small{color:var(--mute);font-size:14px}
+.pill{font-size:13px;font-weight:600;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.s-ok{background:var(--okbg);color:var(--ok)}.s-no{background:var(--nobg);color:var(--no)}.s-na{background:var(--nabg);color:var(--na)}
+.detail{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:12px}
+.dhead{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.dhead .num{font-size:56px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 16px;margin:14px 0;font-size:15px}
+.facts span{display:block;color:var(--mute);font-size:13px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.big{border:0;border-radius:12px;padding:18px;font:600 18px Inter,sans-serif;color:#fff;cursor:pointer;min-height:60px}
+.big.ok{background:var(--ok)}.big.no{background:var(--no)}
+.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 14px;font:500 15px Inter,sans-serif;cursor:pointer;min-height:44px}
+.hist{margin:14px 0 0;padding:0;list-style:none;font-size:14px;color:var(--mute)}
+.gate{display:grid;gap:14px}
+.gate input{font:700 64px/1 "Barlow Condensed",sans-serif;text-align:center;padding:12px;border-radius:16px;border:2px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+.verdict{border-radius:20px;padding:28px 20px;text-align:center;min-height:260px;display:grid;place-content:center;gap:6px}
+.verdict .word{font:700 clamp(44px,12vw,84px)/1 "Barlow Condensed",sans-serif}
+.verdict.ok{background:var(--ok);color:#fff}.verdict.no{background:var(--no);color:#fff}.verdict.na{background:var(--nabg);color:var(--ink)}
+.verdict.empty{background:var(--card);border:2px dashed var(--line);color:var(--mute)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat b{display:block;font:700 clamp(30px,7vw,44px)/1 "Barlow Condensed",sans-serif}
+.stat span{font-size:14px;color:var(--mute)}
+.bar{height:12px;border-radius:99px;background:var(--nabg);overflow:hidden;display:flex;margin:16px 0}
+.bar i{display:block;height:100%}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:15px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}th{font-size:13px;color:var(--mute);font-weight:600}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+h2{font:700 24px/1.1 "Barlow Condensed",sans-serif;margin:26px 0 6px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+select{font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:44px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+[hidden]{display:none!important}
+@media(max-width:600px){.row{grid-template-columns:56px minmax(0,1fr)}.row .pill{grid-column:2;justify-self:start}.num{font-size:26px}.acts{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Besiktningskontroll <span>SM 2027</span></h1>
+    <label class="who">Funktionär <input id="who" placeholder="Ditt namn" autocomplete="off"></label>
+  </div>
+  <nav role="tablist">
+    <button role="tab" data-v="besiktning" aria-selected="true">Besiktning</button>
+    <button role="tab" data-v="ingang" aria-selected="false">Ingång</button>
+    <button role="tab" data-v="oversikt" aria-selected="false">Översikt</button>
+  </nav>
+</header>
+
+<main>
+  <p class="note" id="sync">Hämtar ekipagelistan…</p>
+
+  <section id="v-besiktning">
+    <input class="search" id="q" type="search" placeholder="Startnummer, förare eller hund" autocomplete="off" autofocus>
+    <div id="det"></div>
+    <ul class="list" id="res"></ul>
+  </section>
+
+  <section id="v-ingang" hidden>
+    <div class="gate">
+      <input id="gnum" inputmode="numeric" pattern="[0-9]*" placeholder="Nr" autocomplete="off" aria-label="Startnummer">
+      <div class="verdict empty" id="verdict"><div>Skriv startnumret från nummerlappen</div></div>
+    </div>
+  </section>
+
+  <section id="v-oversikt" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="bar" id="bar"></div>
+    <h2>Per storleksklass</h2>
+    <table><thead><tr><th>Klass</th><th class="r">Ekipage</th><th class="r">Godkända</th><th class="r">Ej godkända</th><th class="r">Kvar</th></tr></thead><tbody id="cls"></tbody></table>
+    <h2>Lista</h2>
+    <div class="filters">
+      <select id="fs"><option value="na">Ej besiktigade</option><option value="no">Ej godkända</option><option value="ok">Godkända</option></select>
+      <select id="fc"><option value="">Alla klasser</option></select>
+    </div>
+    <ul class="list" id="flist"></ul>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sizes=['XS','S','M','L','XL'];
+let E=[],byNr=new Map(),S={},sel=null,pending=0,lastSync=0;
+
+const st=nr=>{const h=S[nr];return h&&h.length?h[h.length-1][0]:'na'};
+const LBL={ok:'Godkänd',no:'Ej godkänd',na:'Ej besiktigad'};
+const pill=s=>`<span class="pill s-${s}">${LBL[s]}</span>`;
+const tid=t=>new Date(t).toLocaleString('sv-SE',{weekday:'short',hour:'2-digit',minute:'2-digit'});
+const klock=t=>new Date(t).toLocaleTimeString('sv-SE');
+
+let who='';try{who=localStorage.getItem('sm27-who')||''}catch(e){}
+$('#who').value=who;
+$('#who').addEventListener('input',e=>{who=e.target.value.trim();try{localStorage.setItem('sm27-who',who)}catch(_){}});
+
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200)};
+function syncLine(msg){
+  if(msg){$('#sync').textContent=msg;return}
+  $('#sync').innerHTML=pending?'Sparar…':`${E.length} ekipage · status uppdaterad ${klock(lastSync)} <button class="ghost" id="upd" style="min-height:32px;padding:4px 10px;font-size:13px;margin-left:6px">Uppdatera</button>`;
+}
+document.addEventListener('click',e=>{if(e.target.id==='upd'){e.target.textContent='Uppdaterar…';poll(true)}});
+
+// --- Server ---
+// Webbappens URL från Apps Script (Driftsätt > Hantera driftsättningar), slutar på /exec.
+const API_URL="";
+async function api(action,data={}){
+  if(!API_URL)throw new Error('API_URL saknas i besiktning/index.html');
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,kod,...data})});
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const j=await res.json();if(j.fel)throw new Error(j.fel);return j;
+}
+function applyStatus(r){if(pending)return;S=r.status||{};lastSync=r.tid;syncLine();rerender()}
+function poll(force){if((document.hidden&&!force)||pending||!E.length)return Promise.resolve();return api('status').then(applyStatus).catch(()=>syncLine('Ingen kontakt med servern. Försöker igen…'))}
+
+let kod='';try{kod=localStorage.getItem('sm27-kod')||''}catch(e){}
+function askKod(fel){
+  $('#sync').innerHTML=`<form id="kf" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${fel?'<b style="color:var(--no)">Fel kod.</b> ':''}Skriv in koden du fått av tävlingsledningen <input id="kin" autocomplete="off" style="font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:140px"><button class="ghost">Öppna</button></form>`;
+  $('#kin').focus();
+  $('#kf').addEventListener('submit',e=>{e.preventDefault();kod=$('#kin').value.trim();try{localStorage.setItem('sm27-kod',kod)}catch(_){};load()});
+}
+function load(){syncLine('Hämtar ekipagelistan…');api('allt').then(r=>{
+  E=r.ekipage.map(a=>({nr:a[0],forare:a[1],klubb:a[2],hund:a[3],ras:a[4],klass:a[5]}));
+  E.forEach(e=>e.key=(e.nr+' '+e.forare+' '+e.hund+' '+e.ras).toLowerCase());
+  byNr=new Map(E.map(e=>[e.nr,e]));
+  S=r.status||{};lastSync=r.tid;syncLine();rerender();
+  if(!load.started){load.started=1;setInterval(poll,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()})}
+}).catch(err=>/Fel kod/.test(err.message)?askKod(!!kod):syncLine('Kunde inte hämta listan: '+err.message))}
+load();
+
+function send(nr,handelse){
+  pending++;syncLine();
+  api('registrera',{nr,handelse,funktionar:who}).then(r=>{pending--;applyStatus(r)})
+  .catch(err=>{pending--;toast('Sparades inte: '+err.message);poll()});
+}
+
+// --- Sök ---
+function search(q){
+  q=q.trim().toLowerCase();if(!q)return[];
+  if(/^\d+$/.test(q)){const ex=byNr.get(+q);const rest=E.filter(e=>e!==ex&&String(e.nr).startsWith(q)).slice(0,ex?7:8);return ex?[ex,...rest]:rest}
+  const parts=q.split(/\s+/);return E.filter(e=>parts.every(p=>e.key.includes(p))).slice(0,30);
+}
+const rowHtml=e=>`<li><button class="row" data-nr="${e.nr}"><span class="num">${e.nr}</span><span class="nm"><b>${esc(e.forare)} med ${esc(e.hund)}</b><small>${esc(e.ras)} · ${esc(e.klass)} · ${esc(e.klubb)}</small></span>${pill(st(e.nr))}</button></li>`;
+function renderSearch(){
+  const r=search($('#q').value);
+  if(r.length===1&&!sel)sel=r[0].nr;
+  $('#res').innerHTML=r.filter(e=>e.nr!==sel).map(rowHtml).join('')||($('#q').value.trim()&&!sel&&E.length?'<li class="note">Inga träffar.</li>':'');
+  renderDetail();
+}
+function renderDetail(){
+  if(!sel||!byNr.has(sel)){$('#det').innerHTML='';return}
+  const e=byNr.get(sel),s=st(sel),h=S[sel]||[];
+  $('#det').innerHTML=`<div class="detail">
+    <div class="dhead"><span class="num">${e.nr}</span><div><b style="font-size:20px">${esc(e.forare)} med ${esc(e.hund)}</b><br>${pill(s)}</div></div>
+    <div class="facts"><div><span>Ras</span>${esc(e.ras)}</div><div><span>Storleksklass</span>${esc(e.klass)}</div><div><span>Klubb</span>${esc(e.klubb)}</div></div>
+    <div class="acts"><button class="big ok" data-set="ok">Godkänd</button><button class="big no" data-set="no">Ej godkänd</button></div>
+    ${h.length?`<ul class="hist">${h.slice().reverse().map(x=>`<li>${LBL[x[0]]} · ${tid(x[1])} · ${esc(x[2]||'okänd funktionär')}</li>`).join('')}</ul><p style="margin:10px 0 0"><button class="ghost" data-undo>Ångra senaste</button></p>`:''}
+  </div>`;
+}
+$('#q').addEventListener('input',()=>{sel=null;renderSearch()});
+$('#res').addEventListener('click',e=>{const b=e.target.closest('[data-nr]');if(!b)return;sel=+b.dataset.nr;renderSearch();window.scrollTo({top:0})});
+$('#det').addEventListener('click',e=>{
+  const b=e.target.closest('[data-set]');
+  if(b){
+    if(!who){toast('Skriv ditt namn uppe till höger först');$('#who').focus();return}
+    const s=b.dataset.set,nr=sel;
+    (S[nr]=S[nr]||[]).push([s,Date.now(),who]);
+    send(nr,s==='ok'?'Godkänd':'Ej godkänd');
+    toast(`${nr}: ${LBL[s]}`);sel=null;$('#q').value='';renderSearch();$('#q').focus();return}
+  if(e.target.closest('[data-undo]')){
+    if(!who){toast('Skriv ditt namn uppe till höger först');$('#who').focus();return}
+    S[sel].pop();if(!S[sel].length)delete S[sel];send(sel,'Ångrad');renderSearch()}
+});
+
+// --- Ingång ---
+function renderGate(){
+  const v=$('#gnum').value.trim(),el=$('#verdict');
+  if(!v){el.className='verdict empty';el.innerHTML='<div>Skriv startnumret från nummerlappen</div>';return}
+  const e=byNr.get(+v);
+  if(!e){el.className='verdict na';el.innerHTML=`<div class="word">Okänt nr</div><div>Startnummer ${esc(v)} finns inte i listan</div>`;return}
+  const s=st(e.nr),ok=s==='ok';
+  el.className='verdict '+(ok?'ok':'no');
+  el.innerHTML=`<div class="word">${ok?'Får starta':'Får inte starta'}</div>${ok?'':`<div style="font-size:20px;font-weight:600">${s==='no'?'Ej godkänd vid besiktning':'Inte besiktigad'}</div>`}<div style="font-size:18px;margin-top:6px">${e.nr} · ${esc(e.forare)} med ${esc(e.hund)}</div><div>${esc(e.klass)} · ${esc(e.ras)}</div>`;
+}
+$('#gnum').addEventListener('input',()=>{renderGate();clearTimeout(renderGate.t);if(byNr.has(+$('#gnum').value.trim()))renderGate.t=setTimeout(()=>poll(true),300)});
+$('#gnum').addEventListener('focus',e=>e.target.select());
+
+// --- Översikt ---
+sizes.forEach(k=>$('#fc').insertAdjacentHTML('beforeend',`<option>${k}</option>`));
+function renderOverview(){
+  const c={ok:0,no:0,na:0};E.forEach(e=>c[st(e.nr)]++);const n=E.length||1;
+  $('#stats').innerHTML=[['ok','Godkända'],['no','Ej godkända'],['na','Kvar att besiktiga']].map(([k,l])=>`<div class="stat"><b style="color:var(--${k==='na'?'ink':k})">${c[k]}</b><span>${l}</span></div>`).join('');
+  $('#bar').innerHTML=`<i style="width:${c.ok/n*100}%;background:var(--ok)"></i><i style="width:${c.no/n*100}%;background:var(--no)"></i>`;
+  $('#cls').innerHTML=sizes.map(k=>{const L=E.filter(e=>e.klass===k),m={ok:0,no:0,na:0};L.forEach(e=>m[st(e.nr)]++);return `<tr><td>${k}</td><td class="r">${L.length}</td><td class="r">${m.ok}</td><td class="r">${m.no}</td><td class="r">${m.na}</td></tr>`}).join('');
+  const fs=$('#fs').value,fc=$('#fc').value;
+  const L=E.filter(e=>st(e.nr)===fs&&(!fc||e.klass===fc));
+  $('#flist').innerHTML=L.slice(0,200).map(rowHtml).join('')+(L.length>200?`<li class="note">Visar 200 av ${L.length}. Filtrera på klass för att se resten.</li>`:'')||'<li class="note">Inga ekipage.</li>';
+}
+$('#fs').addEventListener('change',renderOverview);$('#fc').addEventListener('change',renderOverview);
+$('#flist').addEventListener('click',e=>{const b=e.target.closest('[data-nr]');if(!b)return;show('besiktning');sel=+b.dataset.nr;$('#q').value='';renderSearch()});
+
+// --- Flikar ---
+let view='besiktning';
+function rerender(){if(view==='besiktning')renderSearch();if(view==='ingang')renderGate();if(view==='oversikt')renderOverview()}
+function show(v){
+  view=v;
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  ['besiktning','ingang','oversikt'].forEach(x=>$('#v-'+x).hidden=x!==v);
+  rerender();
+  if(v==='ingang')$('#gnum').focus();
+  if(v==='besiktning')$('#q').focus();
+}
+document.querySelector('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.v)});
+show('besiktning');
+}
+</script>
+</body>
+</html>
