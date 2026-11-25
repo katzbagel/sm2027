@@ -17,9 +17,22 @@ var FLIK_SPEAKER = 'Speakerinfo';
 // Koden finns bara här i skriptet, aldrig i webbsidans kod.
 var KOD = ''; // Fyll i efter inklistring i Apps Script. Checka aldrig in den riktiga koden.
 
+// Kalkylbladet som används. Behövs när skriptet inte är bundet till bladet.
+var SHEET_ID = '';
+
+function ss_() {
+  return SpreadsheetApp.getActiveSpreadsheet() || SpreadsheetApp.openById(SHEET_ID);
+}
+
 function kollaKod_(kod) {
   if (!KOD) throw new Error('KOD är inte ifylld i Apps Script');
   if (KOD && String(kod || '').trim().toLowerCase() !== KOD.toLowerCase()) throw new Error('Fel kod');
+}
+
+/** Kör en gång i editorn: godkänner behörigheter och fyller testdata. */
+function forbered() {
+  var r = hamtaAllt(KOD);
+  Logger.log(r.ekipage.length + ' ekipage');
 }
 
 function doGet() {
@@ -46,7 +59,7 @@ function json_(obj) {
 /** Hela ekipagelistan plus aktuell status. Anropas en gång när sidan öppnas. */
 function hamtaAllt(kod) {
   kollaKod_(kod);
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = ss_();
   var sh = ss.getSheetByName(FLIK_EKIPAGE);
   if (sh.getLastRow() < 2) fyllTestdata_();
   var rader = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues()
@@ -59,7 +72,7 @@ function hamtaAllt(kod) {
 /** Bara statusen. Anropas regelbundet av alla enheter. */
 function hamtaStatus(kod) {
   kollaKod_(kod);
-  var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(FLIK_BESIKTNING);
+  var sh = ss_().getSheetByName(FLIK_BESIKTNING);
   var status = {};
   var n = sh.getLastRow() - 1;
   if (n > 0) {
@@ -90,7 +103,7 @@ function registrera(nr, handelse, funktionar, kod) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    SpreadsheetApp.getActiveSpreadsheet().getSheetByName(FLIK_BESIKTNING)
+    ss_().getSheetByName(FLIK_BESIKTNING)
       .appendRow([new Date(), nr, handelse, funktionar]);
     SpreadsheetApp.flush();
   } finally {
@@ -118,7 +131,7 @@ function fyllTestdata_() {
     E.push([i, pick(fn) + ' ' + pick(en), pick(klubb), pick(hn), pick(ras[k]), k]);
     S.push([i, pick([0,0,1,1,2,3,4,6]), 2015 + Math.floor(rnd() * 9), pick(bel), pick(kul), 'Ja']);
   }
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = ss_();
   ss.getSheetByName(FLIK_EKIPAGE).getRange(2, 1, E.length, 6).setValues(E);
   var sp = ss.getSheetByName(FLIK_SPEAKER);
   if (sp.getLastRow() < 2) sp.getRange(2, 1, S.length, 6).setValues(S);

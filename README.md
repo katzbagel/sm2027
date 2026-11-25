@@ -44,7 +44,7 @@ Funktionärer registrerar veterinärbesiktning, och ingångarna ser om ett ekipa
 
 Kalkylbladet har flikarna `Ekipage`, `Besiktning` (logg som bara fylls på) och `Speakerinfo`. Är `Ekipage` tom fylls den med påhittade testdata vid första anropet.
 
-Uppsättning: klistra in `backend/Besiktning.gs`, driftsätt som webbapp (Kör som: jag, Åtkomst: alla) och lägg `/exec`-URL:en i `API_URL`.
+Uppsättning: klistra in `backend/Besiktning.gs`, fyll i `KOD` och `SHEET_ID`, kör `forbered` en gång i editorn, driftsätt som webbapp (Kör som: jag, Åtkomst: alla) och lägg `/exec`-URL:en i `API_URL`.
 
 Adress: `https://katzbagel.github.io/sm2027/besiktning/`
 

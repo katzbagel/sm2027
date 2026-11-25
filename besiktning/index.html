@@ -145,7 +145,7 @@ document.addEventListener('click',e=>{if(e.target.id==='upd'){e.target.textConte
 
 // --- Server ---
 // Webbappens URL från Apps Script (Driftsätt > Hantera driftsättningar), slutar på /exec.
-const API_URL="";
+const API_URL="https://script.google.com/macros/s/AKfycbwFh-Gd--aOUo-Uke7xXT5rJDxZjTj31r_L6wiYhuLfyzG6-0NSCWF-AigFCwH5q77p7g/exec";
 async function api(action,data={}){
   if(!API_URL)throw new Error('API_URL saknas i besiktning/index.html');
   const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,kod,...data})});
