@@ -48,6 +48,12 @@ main{max-width:860px;margin:0 auto;padding:20px max(4vw,16px) 48px}
 .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .big{border:0;border-radius:12px;padding:18px;font:600 18px Inter,sans-serif;color:#fff;cursor:pointer;min-height:60px}
 .big.ok{background:var(--ok)}.big.no{background:var(--no)}
+.big:disabled{opacity:.35;cursor:not-allowed}
+.checks{display:grid;gap:8px;margin:4px 0 12px}
+.chk{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer;min-height:56px}
+.chk input{width:26px;height:26px;flex:none;accent-color:var(--ok)}
+.chk small{color:var(--mute);font-size:13px}
+.chk:has(input:checked){border-color:var(--ok);background:var(--okbg)}
 .ghost{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 14px;font:500 15px Inter,sans-serif;cursor:pointer;min-height:44px}
 .hist{margin:14px 0 0;padding:0;list-style:none;font-size:14px;color:var(--mute)}
 .gate{display:grid;gap:14px}
@@ -124,7 +130,7 @@ select{font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid var(--
 const $=s=>document.querySelector(s);
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sizes=['XS','S','M','L','XL'];
-let E=[],byNr=new Map(),S={},sel=null,pending=0,lastSync=0;
+let E=[],byNr=new Map(),S={},sel=null,pending=0,lastSync=0,ck={nr:null,id:false,vacc:false};
 
 const st=nr=>{const h=S[nr];return h&&h.length?h[h.length-1][0]:'na'};
 const LBL={ok:'Godkänd',no:'Ej godkänd',na:'Ej besiktigad'};
@@ -192,15 +198,21 @@ function renderSearch(){
 function renderDetail(){
   if(!sel||!byNr.has(sel)){$('#det').innerHTML='';return}
   const e=byNr.get(sel),s=st(sel),h=S[sel]||[];
+  if(ck.nr!==sel)ck={nr:sel,id:false,vacc:false};
   $('#det').innerHTML=`<div class="detail">
     <div class="dhead"><span class="num">${e.nr}</span><div><b style="font-size:20px">${esc(e.forare)} med ${esc(e.hund)}</b><br>${pill(s)}</div></div>
     <div class="facts"><div><span>Ras</span>${esc(e.ras)}</div><div><span>Storleksklass</span>${esc(e.klass)}</div><div><span>Klubb</span>${esc(e.klubb)}</div></div>
-    <div class="acts"><button class="big ok" data-set="ok">Godkänd</button><button class="big no" data-set="no">Ej godkänd</button></div>
+    <div class="checks">
+      <label class="chk"><input type="checkbox" data-chk="id"${ck.id?" checked":""}> <span><b>ID kontrollerat</b><br><small>Chipnumret stämmer med vaccinationsintyget</small></span></label>
+      <label class="chk"><input type="checkbox" data-chk="vacc"${ck.vacc?" checked":""}> <span><b>Vaccination kontrollerad</b><br><small>Intyget visar giltiga vaccinationer</small></span></label>
+    </div>
+    <div class="acts"><button class="big ok" data-set="ok"${ck.id&&ck.vacc?"":" disabled"}>Godkänd</button><button class="big no" data-set="no">Ej godkänd</button></div>
     ${h.length?`<ul class="hist">${h.slice().reverse().map(x=>`<li>${LBL[x[0]]} · ${tid(x[1])} · ${esc(x[2]||'okänd funktionär')}</li>`).join('')}</ul><p style="margin:10px 0 0"><button class="ghost" data-undo>Ångra senaste</button></p>`:''}
   </div>`;
 }
 $('#q').addEventListener('input',()=>{sel=null;renderSearch()});
 $('#res').addEventListener('click',e=>{const b=e.target.closest('[data-nr]');if(!b)return;sel=+b.dataset.nr;renderSearch();window.scrollTo({top:0})});
+$('#det').addEventListener('change',e=>{const k=e.target.dataset.chk;if(!k)return;ck[k]=e.target.checked;$('#det [data-set=ok]').disabled=!(ck.id&&ck.vacc)});
 $('#det').addEventListener('click',e=>{
   const b=e.target.closest('[data-set]');
   if(b){
